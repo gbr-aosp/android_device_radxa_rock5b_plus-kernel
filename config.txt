@@ -2,6 +2,6 @@ boot_device=mmc
 boot_devnum=0
 boot_partnum=1
 root_partnum=2
-fdtfile=rk3588s-orangepi-5-pro-1.dtb
+fdtfile=rk3588-rock-5b-plus.dtb
 fdtoverlay=android-sdcard.dtbo
 recovery=false
