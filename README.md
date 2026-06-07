@@ -1,49 +1,68 @@
-AOSP 16 device Kernel files for Orangepi 5 Pro.
+AOSP 16 device kernel files for Radxa Rock 5B+ (RK3588).
 
-The project supports booting from NVME, USB, SD-card, EMMC.
+Ported from the Orange Pi 5 Pro project. Supports booting from SD card, eMMC, NVMe, and USB.
 
+---
 
-In config.txt file, change the value(s) as follows
+Boot device configuration (config.txt)
+---------------------------------------
 
-To select the desired boot device - 
+NOTE: Rock 5B+ MMC numbering is the OPPOSITE of Orange Pi 5 Pro.
+Verified against the board's SPI U-Boot environment (rkimg_bootdev variable).
 
-for sdcard -
-boot_device=mmc
-boot_devnum=0
-
-for emmc -
+For SD card -
 boot_device=mmc
 boot_devnum=1
 
-for NVME -
+For eMMC -
+boot_device=mmc
+boot_devnum=0
+
+For NVMe (first M.2 slot) -
 boot_device=nvme
 boot_devnum=0
 
-for USB -
+For NVMe (second M.2 slot) -
+boot_device=nvme
+boot_devnum=1
+
+For USB -
 boot_device=usb
 boot_devnum=0
 
-NOTE - For some boards, the value of boot_devnum might be different. Please select the boot_devnum respective to their board config.
+The SPI U-Boot on Rock 5B+ already tries devices in this order:
+  usb0 -> mmc1 (SD) -> nvme0 -> nvme1 -> mmc0 (eMMC) -> ...
+config.txt only controls where Android looks for its root filesystem,
+not the SPI bootloader's device scan order.
 
-By default, The selected boot device is SD-Card.
+By default, the selected boot device is SD card (boot_devnum=1).
 
-Don't mind the .disabled files, these are just from previous builds. Kept for reference.
+---
 
-To select for another board, Just change the value of fdtfile to their respective board's .dtb file.
+Other settings (config.txt)
+-----------------------------
 
-If want to boot into TWRP recovery, Just change the value of recovery from false to true.
+fdtfile - Device Tree Blob filename. For Rock 5B+: rk3588-rock-5b-plus.dtb
+fdtoverlay - Set to android-sdcard.dtbo when booting from SD card.
+recovery - Set to true to boot into TWRP recovery instead of Android.
 
-Note -  TWRP recovery has a bug where it boots fine in the background but doesnt show the image on the screen. The fix for it is just reconnect the hdmi.
+Note: TWRP recovery boots correctly but may show a blank screen on first boot.
+Fix: unplug and reconnect the HDMI cable.
+
+---
 
 Not working -
 
 Camera
-3.5 mm audio
+3.5mm audio
 
 Working -
 
-everything else including vulkan.
+Everything else including Vulkan.
 
-This project can be ported to any device which utilises Rockchip SoC with minor changes.
+---
 
-any doubts, feel free to mail me at vdarbha0473@gmail.com
+This project can be ported to any device using a Rockchip SoC with minor changes.
+The key difference between boards is the mmc/nvme device numbering — always verify
+against the board's actual U-Boot environment with:
+  sudo grep -ab "boot_devnum\|rkimg_bootdev" /dev/mtd0

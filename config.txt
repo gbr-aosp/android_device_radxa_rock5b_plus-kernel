@@ -1,5 +1,5 @@
 boot_device=mmc
-boot_devnum=0
+boot_devnum=1
 boot_partnum=1
 root_partnum=2
 fdtfile=rk3588-rock-5b-plus.dtb
